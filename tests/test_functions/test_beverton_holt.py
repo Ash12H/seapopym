@@ -20,8 +20,8 @@ class TestBevertonHoltCompiled:
 
         result = beverton_holt(biomass, alpha)
 
-        # Expected: biomass / (1 + alpha * biomass)
-        expected = biomass / (1 + alpha * biomass)
+        # Expected: (alpha * biomass) / (1 + alpha * biomass)
+        expected = (alpha * biomass) / (1 + alpha * biomass)
 
         np.testing.assert_array_almost_equal(result, expected)
 
@@ -42,8 +42,8 @@ class TestBevertonHoltCompiled:
 
         result = beverton_holt(biomass, alpha)
 
-        # With alpha=0, result should equal biomass
-        np.testing.assert_array_almost_equal(result, biomass)
+        # With alpha=0, result should be zero (no density dependence = no recruitment)
+        np.testing.assert_array_almost_equal(result, np.zeros_like(biomass))
 
     def test_beverton_holt_high_alpha(self):
         """Test Beverton-Holt with strong density dependence."""
@@ -52,11 +52,15 @@ class TestBevertonHoltCompiled:
 
         result = beverton_holt(biomass, alpha)
 
-        # With high alpha and biomass, result should be much smaller than biomass
-        assert np.all(result < biomass)
-        # Result should approach 1/alpha for large biomass
-        expected_max = 1.0 / alpha
-        assert np.all(result <= expected_max + 0.01)
+        # With high alpha and high biomass, coefficient should approach 1 (asymptote)
+        # For large biomass: (alpha * B) / (1 + alpha * B) → 1
+        assert np.all(result > 0.9)  # Should be close to 1
+        assert np.all(result <= 1.0)  # But never exceed 1
+
+        # At inflection point (biomass = 1/alpha), coefficient should be 0.5
+        biomass_inflection = 1.0 / alpha
+        result_inflection = beverton_holt(np.array([[biomass_inflection]]), alpha)
+        np.testing.assert_almost_equal(result_inflection[0, 0], 0.5)
 
     def test_biomass_beverton_holt_basic(self):
         """Test basic biomass_beverton_holt function."""
@@ -126,7 +130,7 @@ class TestBevertonHoltCompiled:
         assert np.all(result[0, ...] > 0)
 
     def test_biomass_beverton_holt_density_dependence_effect(self):
-        """Test that density dependence affects biomass growth."""
+        """Test that density dependence parameter affects biomass growth."""
         n_time = 10
         n_lat = 2
         n_lon = 2
@@ -135,40 +139,43 @@ class TestBevertonHoltCompiled:
         mortality = np.full((n_time, n_lat, n_lon), 0.05)
         primary_production = np.full((n_time, n_lat, n_lon), 2.0)
         mask_temperature = np.ones((n_time, n_lat, n_lon, n_cohort), dtype=bool)
-        timestep_number = np.array([2.0, 3.0])  # More realistic timestep numbers
+        timestep_number = np.array([2.0, 3.0])
         delta_time = 1.0
 
-        # Need initial biomass to kickstart Beverton-Holt (otherwise coefficient=0)
+        # Need initial biomass to kickstart Beverton-Holt
         initial_biomass = np.full((n_lat, n_lon), 1.0)
 
-        # Run with no density dependence
-        result_no_dd = biomass_beverton_holt(
+        # Run with low density dependence (recruitment saturates slowly)
+        result_low_dd = biomass_beverton_holt(
             mortality=mortality,
             primary_production=primary_production,
             mask_temperature=mask_temperature,
             timestep_number=timestep_number,
             delta_time=delta_time,
-            density_dependance_parameter=0.0,
+            density_dependance_parameter=0.1,
             initial_conditions_biomass=initial_biomass,
         )
 
-        # Run with strong density dependence
-        result_with_dd = biomass_beverton_holt(
+        # Run with high density dependence (recruitment saturates quickly)
+        result_high_dd = biomass_beverton_holt(
             mortality=mortality,
             primary_production=primary_production,
             mask_temperature=mask_temperature,
             timestep_number=timestep_number,
             delta_time=delta_time,
-            density_dependance_parameter=0.5,
+            density_dependance_parameter=1.0,
             initial_conditions_biomass=initial_biomass,
         )
 
         # Both should have positive biomass
-        assert np.all(result_no_dd > 0)
-        assert np.all(result_with_dd > 0)
+        assert np.all(result_low_dd > 0)
+        assert np.all(result_high_dd > 0)
 
-        # With density dependence, final biomass should be lower
-        assert np.all(result_with_dd[-1, ...] < result_no_dd[-1, ...])
+        # With higher b parameter, BH coefficient reaches higher values at low-medium biomass
+        # Formula: (b*SSB)/(1+b*SSB) - higher b means steeper initial growth
+        # At moderate biomass levels, higher b gives higher coefficient and thus higher recruitment
+        # Therefore, higher b leads to HIGHER final biomass (not lower!)
+        assert np.all(result_high_dd[-1, ...] > result_low_dd[-1, ...])
 
     def test_biomass_beverton_holt_conservation_properties(self):
         """Test that biomass follows expected dynamics."""

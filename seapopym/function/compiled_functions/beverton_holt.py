@@ -10,8 +10,30 @@ from seapopym.function.compiled_functions.production_compiled_functions import a
 
 @jit
 def beverton_holt(biomass: np.ndarray, density_dependance_parameter: float) -> np.ndarray:
-    """Beverton-Holt function."""
-    return biomass / (1 + density_dependance_parameter * biomass)
+    """
+    Normalized Beverton-Holt function for spawning stock biomass.
+
+    Returns a suitability coefficient between 0 and 1 that modulates primary production
+    based on spawning stock biomass (SSB).
+
+    Formula: f(SSB) = (b * SSB) / (1 + b * SSB)
+    - f(0) = 0 (no spawners, no recruitment)
+    - f(∞) → 1 (asymptotic maximum)
+    - f(1/b) = 0.5 (inflection point)
+
+    Parameters
+    ----------
+    biomass : np.ndarray
+        Spawning stock biomass (SSB)
+    density_dependance_parameter : float
+        Density dependence parameter (b)
+
+    Returns
+    -------
+    coefficient : np.ndarray
+        Suitability coefficient between 0 and 1
+    """
+    return (density_dependance_parameter * biomass) / (1 + density_dependance_parameter * biomass)
 
 
 @jit
