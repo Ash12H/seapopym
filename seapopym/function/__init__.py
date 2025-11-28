@@ -1,6 +1,6 @@
 from .biomass import BiomassKernel
 from .production import ProductionKernel
-from .berverton_holt import BiomassBeverttonHoltKernel
+from .berverton_holt import BiomassBeverttonHoltKernel, BiomassBeverttonHoltSurvivalKernel
 from .apply_coefficient_to_primary_production import PrimaryProductionByFgroupKernel
 from .average_temperature import AverageTemperatureKernel
 from .cell_area import CellAreaKernel
