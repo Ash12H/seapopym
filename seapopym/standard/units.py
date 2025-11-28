@@ -18,11 +18,11 @@ class StandardUnitsLabels(StrEnum):
     """Unit of measurement as used in the model."""
 
     height = "meter"
-    weight = "kilogram"
+    weight = "gram"
     temperature = "celsius"
     time = "day"
-    biomass = "kilogram / meter**2"
-    production = "kilogram / meter**2 / day"
+    biomass = "gram / meter**2"
+    production = "gram / meter**2 / day"
     acidity = "dimensionless"
 
     def __init__(self: StandardUnitsLabels, unit_as_str: str) -> None:
@@ -105,9 +105,9 @@ class StandardUnitsRegistry:
 
             Complex compound units:
             >>> StandardUnitsRegistry.format_unit_string(StandardUnitsLabels.biomass)
-            'kilogram / meter ** 2'
+            'gram / meter ** 2'
             >>> StandardUnitsRegistry.format_unit_string(StandardUnitsLabels.production)
-            'kilogram / meter ** 2 / day'
+            'gram / meter ** 2 / day'
 
         Note:
             This method is the recommended way to get unit strings for xarray
@@ -149,7 +149,7 @@ class StandardUnitsRegistry:
             ...     description="Dry weight biomass per unit area"
             ... )
             >>> attrs
-            {'units': 'kilogram / meter ** 2', 'long_name': 'Biomass density', ...}
+            {'units': 'gram / meter ** 2', 'long_name': 'Biomass density', ...}
 
             Overriding units:
             >>> attrs = StandardUnitsRegistry.get_unit_attrs(
@@ -287,7 +287,7 @@ class StandardUnitsRegistry:
             ...     unit_str = StandardUnitsRegistry.format_unit_string(unit_label)
             ...     print(f"{unit_label.name}: {unit_str}")
             height: meter
-            weight: kilogram
+            weight: gram
             temperature: degree_Celsius
             ...
 
