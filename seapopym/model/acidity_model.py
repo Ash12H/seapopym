@@ -11,6 +11,7 @@ from seapopym.model.no_transport_model import NoTransportModel
 if TYPE_CHECKING:
     from seapopym.configuration.acidity import AcidityConfiguration
     from seapopym.configuration.acidity_bed import AcidityBedConfiguration
+    from seapopym.configuration.acidity_bed_bh import AcidityBedBHConfiguration
 
 AcidityKernel = kernel_factory(
     class_name="AcidityKernel",
@@ -72,3 +73,35 @@ class AcidityBedModel(NoTransportModel):
         chunk = configuration.forcing.chunk.as_dict()
         parallel = configuration.forcing.parallel
         return cls(state=state, kernel=AcidityBedKernel(chunk=chunk, parallel=parallel))
+
+
+AcidityBedBHKernel = kernel_factory(
+    class_name="AcidityBedBHKernel",
+    kernel_unit=[
+        function.GlobalMaskKernel,
+        function.MaskByFunctionalGroupKernel,
+        function.DayLengthKernel,
+        function.AverageTemperatureKernel,
+        function.AverageAcidityKernel,
+        function.PrimaryProductionByFgroupKernel,
+        function.MinTemperatureByCohortKernel,
+        function.MaskTemperatureKernel,
+        function.SurvivalRateBednarsekKernel,
+        function.MortalityTemperatureAcidityBedKernel,
+        function.BiomassBeverttonHoltKernel,
+    ],
+)
+
+
+class AcidityBedBHModel(NoTransportModel):
+    """A pteropod 1D model using Bednarsek mortality and Beverton-Holt density-dependent recruitment."""
+
+    @classmethod
+    def from_configuration(
+        cls: type[AcidityBedBHModel], configuration: AcidityBedBHConfiguration
+    ) -> AcidityBedBHModel:
+        """Create a model from a configuration."""
+        state = configuration.state
+        chunk = configuration.forcing.chunk.as_dict()
+        parallel = configuration.forcing.parallel
+        return cls(state=state, kernel=AcidityBedBHKernel(chunk=chunk, parallel=parallel))

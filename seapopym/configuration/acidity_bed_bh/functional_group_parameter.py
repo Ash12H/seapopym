@@ -1,0 +1,58 @@
+"""Functional group parameters for acidity model with Bednarsek mortality and Beverton-Holt recruitment."""
+
+from functools import partial
+
+import pint
+from attrs import field, frozen, validators
+
+from seapopym.configuration import acidity_bed
+from seapopym.configuration.validation import verify_parameter_init
+from seapopym.standard.labels import ConfigurationLabels
+
+
+@frozen(kw_only=True)
+class FunctionalTypeParameter(acidity_bed.FunctionalTypeParameter):
+    """
+    Functional type parameters with Bednarsek mortality and Beverton-Holt stock-recruitment.
+
+    Extends the Bednarsek parameters with density-dependent recruitment via Beverton-Holt:
+    - Stock-recruitment: R = (B * PP) / (1 + density_dependance_parameter * B)
+    - Where B is biomass and PP is primary production
+    """
+
+    density_dependance_parameter: pint.Quantity = field(
+        alias=ConfigurationLabels.density_dependance_parameter,
+        converter=partial(
+            verify_parameter_init,
+            unit="dimensionless",
+            parameter_name=ConfigurationLabels.density_dependance_parameter,
+        ),
+        validator=validators.ge(0),
+        metadata={
+            "description": "Beverton-Holt density dependence parameter (alpha). "
+            "Controls strength of density-dependent recruitment limitation."
+        },
+    )
+
+
+@frozen(kw_only=True)
+class FunctionalGroupUnit(acidity_bed.FunctionalGroupUnit):
+    """Represent a functional group with Bednarsek and Beverton-Holt parameters."""
+
+    functional_type: FunctionalTypeParameter = field(
+        validator=validators.instance_of(FunctionalTypeParameter),
+        metadata={
+            "description": (
+                "Parameters for temperature/acidity (Bednarsek) and density-dependent recruitment (Beverton-Holt)."
+            )
+        },
+    )
+
+
+@frozen(kw_only=True)
+class FunctionalGroupParameter(acidity_bed.FunctionalGroupParameter):
+    """Store parameters for all functional groups using Bednarsek mortality and Beverton-Holt recruitment."""
+
+    functional_group: list[FunctionalGroupUnit] = field(
+        metadata={"description": "List of all functional groups with Bednarsek and Beverton-Holt parameters."}
+    )
