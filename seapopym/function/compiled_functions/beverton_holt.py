@@ -1,0 +1,117 @@
+"""This module contains the compiled (JIT) functions used by the stock-recrutment generator."""
+
+from __future__ import annotations
+
+import numpy as np
+from numba import jit
+
+from seapopym.function.compiled_functions.production_compiled_functions import ageing, expand_dims
+
+
+@jit
+def beverton_holt(biomass: np.ndarray, density_dependance_parameter: float) -> np.ndarray:
+    """Beverton-Holt function."""
+    return biomass / (1 + density_dependance_parameter * biomass)
+
+
+@jit
+def biomass_beverton_holt(
+    mortality: np.ndarray,
+    primary_production: np.ndarray,
+    mask_temperature: np.ndarray,
+    timestep_number: np.ndarray,
+    delta_time: np.floating | np.integer,
+    density_dependance_parameter: float,
+    initial_conditions_biomass: np.ndarray | None = None,
+    initial_conditions_recruitment: np.ndarray | None = None,
+) -> np.ndarray:
+    """
+    Compute biomass using Beverton-Holt stock-recruitment with coupled production-biomass dynamics.
+
+    Combines production recruitment (with cohort aging) and biomass integration in a single
+    temporal loop due to the time-dependent coupling via the Beverton-Holt relationship.
+    The stock-recruitment function modulates primary production based on current biomass,
+    creating density-dependent recruitment dynamics.
+
+    Parameters
+    ----------
+    mortality : np.ndarray
+        Mortality rate for biomass loss.
+        Shape: [time, lat, lon]. Single functional group.
+    primary_production : np.ndarray
+        Input primary production for each timestep.
+        Shape: [time, lat, lon]. Shared across functional groups.
+    mask_temperature : np.ndarray
+        Recruitment mask determining when production can be recruited.
+        Shape: [time, lat, lon, cohort]. True values allow recruitment.
+    timestep_number : np.ndarray
+        Number of timesteps each cohort spans.
+        Shape: [cohort]. Controls aging rate between cohorts.
+    delta_time : np.floating | np.integer
+        Time step size for numerical integration.
+    density_dependance_parameter : float
+        Beverton-Holt density dependence parameter (alpha).
+        Stock-recruitment: R = B / (1 + alpha * B). Scalar per functional group.
+    initial_conditions_biomass : np.ndarray | None, default=None
+        Initial biomass state for t=0.
+        Shape: [lat, lon]. If None, starts with zero biomass.
+    initial_conditions_recruitment : np.ndarray | None, default=None
+        Pre-existing production in cohorts from previous simulation.
+        Shape: [lat, lon, cohort]. If None, starts with zero recruitment state.
+
+    Returns
+    -------
+    biomass : np.ndarray
+        Biomass evolution over time.
+        Shape: [time, lat, lon]
+
+    Notes
+    -----
+    - Production and biomass must be coupled in the same loop due to time-dependent Beverton-Holt
+    - At each timestep: biomass(t-1) → Beverton-Holt coefficient → recruitment(t) → biomass(t)
+    - Uses implicit Euler method for biomass integration: B(t) = (B(t-1) + dt*R(t)) / (1 + dt*λ(t))
+
+    """
+    # Initialize biomass array with temporal dimension
+    biomass = np.zeros(mortality.shape)
+
+    # Initial biomass for t=0 Beverton-Holt calculation
+    if initial_conditions_biomass is not None:
+        biomass_prev = initial_conditions_biomass
+    else:
+        biomass_prev = np.zeros(mortality[0, ...].shape, dtype=np.float64)
+
+    # Initial pre-production state
+    if initial_conditions_recruitment is not None:
+        next_preproduction = initial_conditions_recruitment
+    else:
+        next_preproduction = np.zeros((*mortality[0, ...].shape, timestep_number.size), dtype=np.float64)
+
+    for timestep in range(primary_production.shape[0]):
+        # Apply Beverton-Holt to previous biomass
+        beverton_holt_coefficient = beverton_holt(biomass_prev, density_dependance_parameter)
+
+        # Production at age 0 with Beverton-Holt modulation
+        # Broadcasting: (lat, lon) * (lat, lon) -> (lat, lon)
+        production_age_0 = expand_dims(
+            beverton_holt_coefficient * primary_production[timestep], timestep_number.size
+        )
+        pre_production = production_age_0 + next_preproduction
+
+        # Age non-recruited production for next timestep
+        if timestep < primary_production.shape[0] - 1:
+            not_recruited = np.where(np.logical_not(mask_temperature[timestep]), pre_production, 0)
+            next_preproduction = ageing(not_recruited, timestep_number)
+
+        # Recruited production (sum over cohorts)
+        recruited = np.sum(np.where(mask_temperature[timestep], pre_production, 0), axis=-1)
+
+        # Euler implicit integration for biomass
+        biomass[timestep, ...] = (biomass_prev + delta_time * recruited) / (
+            1 + delta_time * mortality[timestep, ...]
+        )
+
+        # Update previous biomass for next iteration
+        biomass_prev = biomass[timestep, ...]
+
+    return biomass
