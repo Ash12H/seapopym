@@ -82,6 +82,7 @@ class FunctionalGroupUnitProtocol(Protocol):
 
 # Phase 2 Protocols - Level 2 (depend on Phase 1 protocols)
 
+
 class ForcingParameterProtocol(Protocol):
     """Protocol for forcing parameter classes.
 
@@ -124,6 +125,7 @@ class FunctionalGroupParameterProtocol(Protocol):
 
 # Phase 3 Protocols - Level 3 (depend on Phase 1 & 2 protocols)
 
+
 class ConfigurationProtocol(Protocol):
     """Protocol for configuration classes.
 
@@ -159,6 +161,7 @@ class ConfigurationProtocol(Protocol):
 
 
 # Phase 4 Protocols - Level 4 (Model layer protocols)
+
 
 class ModelProtocol(Protocol):
     """Protocol for model classes.
@@ -214,6 +217,7 @@ class ModelProtocol(Protocol):
 
 
 # Phase 6 Protocols - Template layer protocols
+
 
 class TemplateProtocol(Protocol):
     """Protocol for template classes.

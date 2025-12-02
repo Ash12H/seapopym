@@ -116,9 +116,7 @@ def biomass_beverton_holt(
 
         # Production at age 0 with Beverton-Holt modulation
         # Broadcasting: (lat, lon) * (lat, lon) -> (lat, lon)
-        production_age_0 = expand_dims(
-            beverton_holt_coefficient * primary_production[timestep], timestep_number.size
-        )
+        production_age_0 = expand_dims(beverton_holt_coefficient * primary_production[timestep], timestep_number.size)
         pre_production = production_age_0 + next_preproduction
 
         # Age non-recruited production for next timestep
@@ -130,9 +128,7 @@ def biomass_beverton_holt(
         recruited = np.sum(np.where(mask_temperature[timestep], pre_production, 0), axis=-1)
 
         # Euler implicit integration for biomass
-        biomass[timestep, ...] = (biomass_prev + delta_time * recruited) / (
-            1 + delta_time * mortality[timestep, ...]
-        )
+        biomass[timestep, ...] = (biomass_prev + delta_time * recruited) / (1 + delta_time * mortality[timestep, ...])
 
         # Update previous biomass for next iteration
         biomass_prev = biomass[timestep, ...]
@@ -222,9 +218,7 @@ def biomass_beverton_holt_with_survival_rate(
         beverton_holt_coefficient = beverton_holt(biomass_prev, density_dependance_parameter)
 
         # Production at age 0 with Beverton-Holt modulation
-        production_age_0 = expand_dims(
-            beverton_holt_coefficient * primary_production[timestep], timestep_number.size
-        )
+        production_age_0 = expand_dims(beverton_holt_coefficient * primary_production[timestep], timestep_number.size)
         pre_production = production_age_0 + next_preproduction
 
         # Age non-recruited production for next timestep

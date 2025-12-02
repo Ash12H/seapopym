@@ -25,6 +25,7 @@ if TYPE_CHECKING:
 # Coordinate Factory Functions
 # These replace the functions previously in coordinates.py
 
+
 def create_latitude_coordinate(latitude_data: np.ndarray) -> xr.DataArray:
     """Create a new latitude coordinate with standardized Y name."""
     attributs = {"long_name": "latitude", "standard_name": "latitude", "units": "degrees_north", "axis": "Y"}
@@ -113,6 +114,23 @@ class CoordinateAuthority:
         """Get all registered coordinate labels."""
         return tuple(cls._registry.keys())
 
+    @classmethod
+    def _to_coordinate_label(cls, coord_name: str) -> CoordinatesLabels | None:
+        """
+        Convert a coordinate name string to CoordinatesLabels enum if possible.
+
+        Args:
+            coord_name: String name of coordinate
+
+        Returns:
+            CoordinatesLabels enum if recognized, None otherwise
+
+        """
+        try:
+            return CoordinatesLabels(coord_name)
+        except ValueError:
+            return None
+
     def validate_coordinates(self, data: xr.Dataset) -> xr.Dataset:
         """
         Validate and restore missing coordinate attributes.
@@ -123,13 +141,21 @@ class CoordinateAuthority:
         Returns:
             Dataset with validated and restored coordinate attributes
 
+        Note:
+            This method checks coordinate names against the registry. Coordinate names
+            in xarray Datasets are strings, while the registry uses CoordinatesLabels enums.
+            The conversion is handled automatically via StrEnum comparison.
+
         """
         validated_data = data.copy()
 
         for coord_name, coord_data in validated_data.coords.items():
-            if coord_name in self._registry:
+            # Convert coordinate name to CoordinatesLabels if recognized
+            coord_label = self._to_coordinate_label(coord_name)
+
+            if coord_label is not None and coord_label in self._registry:
                 # Get expected attributes from factory
-                expected_coord = self._registry[coord_name](coord_data.values)
+                expected_coord = self._registry[coord_label](coord_data.values)
 
                 # Restore missing attributes
                 current_attrs = coord_data.attrs.copy()

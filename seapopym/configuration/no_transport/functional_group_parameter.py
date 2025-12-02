@@ -14,7 +14,7 @@ from attrs import asdict, field, frozen, validators
 
 from seapopym.configuration.validation import verify_parameter_init
 from seapopym.standard.attributs import functional_group_desc
-from seapopym.standard.coordinates import new_cohort
+from seapopym.standard.coordinate_authority import create_cohort_coordinate
 from seapopym.standard.labels import ConfigurationLabels, CoordinatesLabels
 
 if TYPE_CHECKING:
@@ -175,7 +175,7 @@ class FunctionalGroupUnit:
         """
         timesteps_number = self.update_cohort_timestep(timestep)
 
-        cohort_index = new_cohort(np.arange(0, len(timesteps_number), 1, dtype=int))
+        cohort_index = create_cohort_coordinate(np.arange(0, len(timesteps_number), 1, dtype=int))
         max_timestep = np.cumsum(timesteps_number)
         min_timestep = max_timestep - (np.array(timesteps_number) - 1)
         mean_timestep = (max_timestep + min_timestep) / 2

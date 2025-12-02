@@ -8,6 +8,7 @@ from attrs import field, frozen, validators
 from seapopym.configuration import acidity_bed
 from seapopym.configuration.validation import verify_parameter_init
 from seapopym.standard.labels import ConfigurationLabels
+from seapopym.standard.units import StandardUnitsLabels
 
 
 @frozen(kw_only=True)
@@ -24,7 +25,7 @@ class FunctionalTypeParameter(acidity_bed.FunctionalTypeParameter):
         alias=ConfigurationLabels.density_dependance_parameter,
         converter=partial(
             verify_parameter_init,
-            unit="dimensionless",
+            unit=str((1 / StandardUnitsLabels.biomass.units).units),
             parameter_name=ConfigurationLabels.density_dependance_parameter,
         ),
         validator=validators.ge(0),

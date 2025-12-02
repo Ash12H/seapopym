@@ -112,7 +112,7 @@ biomass_desc = {
 average_acidity_by_fgroup_desc = {
     "long_name": "average acidity (pH) by fonctional group",
     "standard_name": "sea water acidity (pH)",
-    "description": ("Average acidity (pH) by functional group according to their layer position during day and night."),
+    "description": "Average acidity (pH) by functional group according to their layer position during day and night.",
     "units": StandardUnitsRegistry.format_unit_string(StandardUnitsLabels.acidity),
 }
 mortality_acidity_field_desc = {
@@ -124,5 +124,11 @@ survival_rate_desc = {
     "standard_name": "survival_rate",
     "long_name": "survival rate",
     "description": "Survival rate according to the temperature and acidity.",
-    "units": "dimenssionless",
+    "units": "dimensionless",
+}
+
+temperature_gillooly_desc = {
+    "standard_name": "sea water temperature",
+    "description": "Sea water temperature with Gillooly et al. (2002) relation.",
+    "units": StandardUnitsRegistry.format_unit_string(StandardUnitsLabels.temperature),
 }

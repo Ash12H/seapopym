@@ -12,8 +12,7 @@ import xarray as xr
 from attrs import field, frozen
 
 from seapopym.configuration.no_transport.kernel_parameter import KernelParameter
-from seapopym.standard.coordinates import reorder_dims
-from seapopym.standard.labels import ConfigurationLabels
+from seapopym.standard.labels import ConfigurationLabels, CoordinatesLabels
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -51,7 +50,7 @@ class NoTransportConfiguration:
             combine_attrs="no_conflicts",
             join="outer",
         ).pint.dequantify()
-        data = reorder_dims(data)
+        data = CoordinatesLabels.order_data(data)
         if self.forcing.parallel:
             data = data.chunk(self.forcing.chunk.as_dict())
         return data.persist()

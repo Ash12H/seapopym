@@ -14,3 +14,4 @@ from .average_acidity import AverageAcidityKernel
 from .mortality_acidity_field import MortalityTemperatureAcidityKernel, MortalityTemperatureAcidityBedKernel
 from .survival_rate import SurvivalRateBednarsekKernel
 from .apply_survival_rate_to_recruitment import ApplySurvivalRateToRecruitmentKernel
+from .temperature_gillooly import TemperatureGilloolyKernel

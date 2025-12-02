@@ -16,6 +16,7 @@ if TYPE_CHECKING:
 AcidityKernel = kernel_factory(
     class_name="AcidityKernel",
     kernel_unit=[
+        function.TemperatureGilloolyKernel,
         function.GlobalMaskKernel,
         function.MaskByFunctionalGroupKernel,
         function.DayLengthKernel,
@@ -46,6 +47,7 @@ class AcidityModel(NoTransportModel):
 AcidityBedKernel = kernel_factory(
     class_name="AcidityBedKernel",
     kernel_unit=[
+        function.TemperatureGilloolyKernel,
         function.GlobalMaskKernel,
         function.MaskByFunctionalGroupKernel,
         function.DayLengthKernel,
@@ -78,6 +80,7 @@ class AcidityBedModel(NoTransportModel):
 AcidityBedBHKernel = kernel_factory(
     class_name="AcidityBedBHKernel",
     kernel_unit=[
+        function.TemperatureGilloolyKernel,
         function.GlobalMaskKernel,
         function.MaskByFunctionalGroupKernel,
         function.DayLengthKernel,
@@ -97,9 +100,7 @@ class AcidityBedBHModel(NoTransportModel):
     """A pteropod 1D model using Bednarsek mortality and Beverton-Holt density-dependent recruitment."""
 
     @classmethod
-    def from_configuration(
-        cls: type[AcidityBedBHModel], configuration: AcidityBedBHConfiguration
-    ) -> AcidityBedBHModel:
+    def from_configuration(cls: type[AcidityBedBHModel], configuration: AcidityBedBHConfiguration) -> AcidityBedBHModel:
         """Create a model from a configuration."""
         state = configuration.state
         chunk = configuration.forcing.chunk.as_dict()
@@ -110,6 +111,7 @@ class AcidityBedBHModel(NoTransportModel):
 AcidityBedBHSurvivalKernel = kernel_factory(
     class_name="AcidityBedBHSurvivalKernel",
     kernel_unit=[
+        function.TemperatureGilloolyKernel,
         function.GlobalMaskKernel,
         function.MaskByFunctionalGroupKernel,
         function.DayLengthKernel,

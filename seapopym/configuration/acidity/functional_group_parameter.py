@@ -23,7 +23,9 @@ class FunctionalTypeParameter(no_transport.FunctionalTypeParameter):
     )
     gamma_lambda_acidity: pint.Quantity = field(
         alias=ConfigurationLabels.gamma_lambda_acidity,
-        converter=partial(verify_parameter_init, unit="dimensionless", parameter_name=ConfigurationLabels.gamma_lambda_acidity),
+        converter=partial(
+            verify_parameter_init, unit="dimensionless", parameter_name=ConfigurationLabels.gamma_lambda_acidity
+        ),
         metadata={"description": "Rate of the mortality due to acidity (pH)."},
     )
 

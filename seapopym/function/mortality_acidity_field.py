@@ -41,11 +41,11 @@ def mortality_acidity_field(state: SeapopymState) -> xr.Dataset:
     lambda_ph_rate = state[ConfigurationLabels.gamma_lambda_acidity]
     lambda_t_max = state[ConfigurationLabels.lambda_temperature_0]
     lambda_t_rate = state[ConfigurationLabels.gamma_lambda_temperature]
-    timestep = state[ConfigurationLabels.timestep]
 
     part_ph = lambda_ph_max * np.exp(lambda_ph_rate * average_acidity)
     part_t = lambda_t_max * np.exp(lambda_t_rate * average_temperature)
-    return xr.Dataset({ForcingLabels.mortality_field: np.exp(-timestep * (part_ph + part_t))})
+    lambda_ = part_ph + part_t
+    return xr.Dataset({ForcingLabels.mortality_field: lambda_})
 
 
 MortalityTemplate = template.template_unit_factory(
@@ -90,14 +90,13 @@ def mortality_acidity_bed_field(state: SeapopymState) -> xr.Dataset:
     gamma_lambda_acidity = state[ConfigurationLabels.gamma_lambda_acidity]
     lambda_0 = state[ConfigurationLabels.lambda_0]
     gamma_lambda_temperature = state[ConfigurationLabels.gamma_lambda_temperature]
-    timestep = state[ConfigurationLabels.timestep]
 
     bednarsek = lambda_0 + gamma_lambda_temperature * average_temperature + gamma_lambda_acidity * average_acidity
-    daily_rate = bednarsek / (100 * 7)
+    lambda_ = bednarsek / (100 * 7)
     with xr.set_options(keep_attrs=True):
-        daily_rate = xr.where(daily_rate >= 0, daily_rate, 0)
+        lambda_ = xr.where(lambda_ >= 0, lambda_, 0)
 
-    return xr.Dataset({ForcingLabels.mortality_field: np.exp(-timestep * (daily_rate))})
+    return xr.Dataset({ForcingLabels.mortality_field: lambda_})
 
 
 MortalityTemperatureAcidityBedKernel = kernel.kernel_unit_factory(

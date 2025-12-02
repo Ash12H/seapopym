@@ -37,14 +37,12 @@ def mortality_field(state: SeapopymState) -> xr.Dataset:
     ----
     The mortality field is computed as follow:
     - lambda = lambda_temperature_0 * exp(gamma_lambda_temperature * T)
-    - B_t = B_(t-1) * exp(-dt * lambda)
 
     Which is equivalent to:
     - tau_m = tau_m_0 * exp(gamma_tau_m * T)
     Where tau_m is equal to 1/lambda, tau_m_0 is equal to 1/lambda_temperature_0 and gamma_tau_m is equal to -gamma_lambda_temperature.
 
     """
-    timestep = state[ConfigurationLabels.timestep]
     average_temperature = state[ForcingLabels.avg_temperature_by_fgroup]
     lambda_temperature_0 = state[ConfigurationLabels.lambda_temperature_0]
     gamma_lambda_temperature = state[ConfigurationLabels.gamma_lambda_temperature]

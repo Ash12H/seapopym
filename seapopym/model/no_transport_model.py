@@ -12,6 +12,7 @@ from seapopym.standard.labels import ConfigurationLabels, ForcingLabels
 
 if TYPE_CHECKING:
     from types import TracebackType
+
     import xarray as xr
 
     from seapopym.configuration.no_transport.configuration import NoTransportConfiguration
@@ -19,6 +20,7 @@ if TYPE_CHECKING:
     from seapopym.standard.types import SeapopymState
 
 pre_kernel = [
+    function.TemperatureGilloolyKernel,
     function.GlobalMaskKernel,
     function.MaskByFunctionalGroupKernel,
     function.DayLengthKernel,
