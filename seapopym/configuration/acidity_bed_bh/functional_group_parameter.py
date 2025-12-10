@@ -17,7 +17,7 @@ class FunctionalTypeParameter(acidity_bed.FunctionalTypeParameter):
     Functional type parameters with Bednarsek mortality and Beverton-Holt stock-recruitment.
 
     Extends the Bednarsek parameters with density-dependent recruitment via Beverton-Holt:
-    - Stock-recruitment: R = (B * PP) / (1 + density_dependance_parameter * B)
+    - Stock-recruitment: R = PP * (density_dependance_parameter * B) / (1 + density_dependance_parameter * B)
     - Where B is biomass and PP is primary production
     """
 
