@@ -48,7 +48,7 @@ def _beverton_holt_helper_init_forcing(fgroup_data: xr.Dataset, state: SeapopymS
 
     return {  # NOTE: the keys correspond to the parameters of the numba function
         "mortality": standardize_forcing(fgroup_data[ForcingLabels.mortality_field]),
-        "primary_production": standardize_forcing(state[ForcingLabels.primary_production]),
+        "primary_production": standardize_forcing(fgroup_data[ForcingLabels.primary_production_by_fgroup]),
         "mask_temperature": standardize_forcing(fgroup_data[ForcingLabels.mask_temperature]),
         "timestep_number": standardize_forcing(fgroup_data[ConfigurationLabels.timesteps_number]),
         "delta_time": int(state[ConfigurationLabels.timestep].data),
@@ -110,7 +110,7 @@ def _beverton_holt_survival_helper_init_forcing(fgroup_data: xr.Dataset, state: 
     return {  # NOTE: the keys correspond to the parameters of the numba function
         "mortality": standardize_forcing(fgroup_data[ForcingLabels.mortality_field]),
         "survival_rate": standardize_forcing(fgroup_data[ForcingLabels.survival_rate]),
-        "primary_production": standardize_forcing(state[ForcingLabels.primary_production]),
+        "primary_production": standardize_forcing(fgroup_data[ForcingLabels.primary_production_by_fgroup]),
         "mask_temperature": standardize_forcing(fgroup_data[ForcingLabels.mask_temperature]),
         "timestep_number": standardize_forcing(fgroup_data[ConfigurationLabels.timesteps_number]),
         "delta_time": int(state[ConfigurationLabels.timestep].data),
