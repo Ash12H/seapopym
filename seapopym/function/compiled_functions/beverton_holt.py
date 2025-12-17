@@ -9,7 +9,9 @@ from seapopym.function.compiled_functions.production_compiled_functions import a
 
 
 @jit
-def beverton_holt(biomass: np.ndarray, density_dependance_parameter: float) -> np.ndarray:
+def beverton_holt(
+    biomass: np.ndarray, density_dependance_parameter_a: float, density_dependance_parameter_b: float
+) -> np.ndarray:
     """
     Normalized Beverton-Holt function for spawning stock biomass.
 
@@ -25,8 +27,10 @@ def beverton_holt(biomass: np.ndarray, density_dependance_parameter: float) -> n
     ----------
     biomass : np.ndarray
         Spawning stock biomass (SSB)
-    density_dependance_parameter : float
-        Density dependence parameter (b)
+    density_dependance_parameter_a : float
+        Density dependence parameter numerator(a)
+    density_dependance_parameter_b : float
+        Density dependence parameter denominator(b)
 
     Returns
     -------
@@ -34,7 +38,7 @@ def beverton_holt(biomass: np.ndarray, density_dependance_parameter: float) -> n
         Suitability coefficient between 0 and 1
 
     """
-    return (density_dependance_parameter * biomass) / (1 + density_dependance_parameter * biomass)
+    return (density_dependance_parameter_a * biomass) / (1 + density_dependance_parameter_b * biomass)
 
 
 @jit
@@ -44,7 +48,8 @@ def biomass_beverton_holt(
     mask_temperature: np.ndarray,
     timestep_number: np.ndarray,
     delta_time: np.floating | np.integer,
-    density_dependance_parameter: float,
+    density_dependance_parameter_a: float,
+    density_dependance_parameter_b: float,
     initial_conditions_biomass: np.ndarray | None = None,
     initial_conditions_recruitment: np.ndarray | None = None,
 ) -> np.ndarray:
@@ -72,9 +77,10 @@ def biomass_beverton_holt(
         Shape: [cohort]. Controls aging rate between cohorts.
     delta_time : np.floating | np.integer
         Time step size for numerical integration.
-    density_dependance_parameter : float
+    density_dependance_parameter_a : float
+    density_dependance_parameter_b : float
         Beverton-Holt density dependence parameter (alpha).
-        Stock-recruitment: R = B / (1 + alpha * B). Scalar per functional group.
+        Stock-recruitment: R = a / (1 + b * B). Scalar per functional group.
     initial_conditions_biomass : np.ndarray | None, default=None
         Initial biomass state for t=0.
         Shape: [lat, lon]. If None, starts with zero biomass.
@@ -112,7 +118,9 @@ def biomass_beverton_holt(
 
     for timestep in range(primary_production.shape[0]):
         # Apply Beverton-Holt to previous biomass
-        beverton_holt_coefficient = beverton_holt(biomass_prev, density_dependance_parameter)
+        beverton_holt_coefficient = beverton_holt(
+            biomass_prev, density_dependance_parameter_a, density_dependance_parameter_b
+        )
 
         # Production at age 0 with Beverton-Holt modulation
         # Broadcasting: (lat, lon) * (lat, lon) -> (lat, lon)
@@ -144,7 +152,8 @@ def biomass_beverton_holt_with_survival_rate(
     mask_temperature: np.ndarray,
     timestep_number: np.ndarray,
     delta_time: np.floating | np.integer,
-    density_dependance_parameter: float,
+    density_dependance_parameter_a: float,
+    density_dependance_parameter_b: float,
     initial_conditions_biomass: np.ndarray | None = None,
     initial_conditions_recruitment: np.ndarray | None = None,
 ) -> np.ndarray:
@@ -174,9 +183,10 @@ def biomass_beverton_holt_with_survival_rate(
         Shape: [cohort]. Controls aging rate between cohorts.
     delta_time : np.floating | np.integer
         Time step size for numerical integration.
-    density_dependance_parameter : float
-        Beverton-Holt density dependence parameter (b).
-        Stock-recruitment: R = B / (1 + b * B). Scalar per functional group.
+    density_dependance_parameter_a : float
+    density_dependance_parameter_b : float
+        Beverton-Holt density dependence parameters.
+        Stock-recruitment: R = a / (1 + b * B). Scalar per functional group.
     initial_conditions_biomass : np.ndarray | None, default=None
         Initial biomass state for t=0.
         Shape: [lat, lon]. If None, starts with zero biomass.
@@ -215,7 +225,9 @@ def biomass_beverton_holt_with_survival_rate(
 
     for timestep in range(primary_production.shape[0]):
         # Apply Beverton-Holt to previous biomass
-        beverton_holt_coefficient = beverton_holt(biomass_prev, density_dependance_parameter)
+        beverton_holt_coefficient = beverton_holt(
+            biomass_prev, density_dependance_parameter_a, density_dependance_parameter_b
+        )
 
         # Production at age 0 with Beverton-Holt modulation
         production_age_0 = expand_dims(beverton_holt_coefficient * primary_production[timestep], timestep_number.size)

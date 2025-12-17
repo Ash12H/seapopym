@@ -66,7 +66,8 @@ class ConfigurationLabels(StrEnum):
     gamma_tr = "gamma_tr"
     day_layer = "day_layer"
     night_layer = "night_layer"
-    density_dependance_parameter = "density_dependance_parameter"
+    density_dependance_parameter_a = "density_dependance_parameter_a"
+    density_dependance_parameter_b = "density_dependance_parameter_b"
     # Cohorts
     cohort = "cohort"  # New axis
     timesteps_number = "timesteps_number"

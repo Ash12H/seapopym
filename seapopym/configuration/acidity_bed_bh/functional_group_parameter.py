@@ -17,20 +17,34 @@ class FunctionalTypeParameter(acidity_bed.FunctionalTypeParameter):
     Functional type parameters with Bednarsek mortality and Beverton-Holt stock-recruitment.
 
     Extends the Bednarsek parameters with density-dependent recruitment via Beverton-Holt:
-    - Stock-recruitment: R = PP * (density_dependance_parameter * B) / (1 + density_dependance_parameter * B)
+    - Stock-recruitment: R = PP * (density_dependance_parameter_a * B) / (1 + density_dependance_parameter_b * B)
     - Where B is biomass and PP is primary production
     """
 
-    density_dependance_parameter: pint.Quantity = field(
-        alias=ConfigurationLabels.density_dependance_parameter,
+    density_dependance_parameter_a: pint.Quantity = field(
+        alias=ConfigurationLabels.density_dependance_parameter_a,
         converter=partial(
             verify_parameter_init,
             unit=str((1 / StandardUnitsLabels.biomass.units).units),
-            parameter_name=ConfigurationLabels.density_dependance_parameter,
+            parameter_name=ConfigurationLabels.density_dependance_parameter_a,
         ),
         validator=validators.ge(0),
         metadata={
-            "description": "Beverton-Holt density dependence parameter (alpha). "
+            "description": "Beverton-Holt density dependence parameter numerator (a). "
+            "Controls strength of density-dependent recruitment limitation."
+        },
+    )
+
+    density_dependance_parameter_b: pint.Quantity = field(
+        alias=ConfigurationLabels.density_dependance_parameter_b,
+        converter=partial(
+            verify_parameter_init,
+            unit=str((1 / StandardUnitsLabels.biomass.units).units),
+            parameter_name=ConfigurationLabels.density_dependance_parameter_b,
+        ),
+        validator=validators.ge(0),
+        metadata={
+            "description": "Beverton-Holt density dependence parameter denominator (b). "
             "Controls strength of density-dependent recruitment limitation."
         },
     )

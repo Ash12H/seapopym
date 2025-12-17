@@ -44,7 +44,8 @@ def _beverton_holt_helper_init_forcing(fgroup_data: xr.Dataset, state: SeapopymS
         )
 
     # Extract density dependence parameter (scalar per functional group)
-    density_dependance_parameter = float(fgroup_data[ConfigurationLabels.density_dependance_parameter].data)
+    density_dependance_parameter_a = float(fgroup_data[ConfigurationLabels.density_dependance_parameter_a].data)
+    density_dependance_parameter_b = float(fgroup_data[ConfigurationLabels.density_dependance_parameter_b].data)
 
     return {  # NOTE: the keys correspond to the parameters of the numba function
         "mortality": standardize_forcing(fgroup_data[ForcingLabels.mortality_field]),
@@ -52,7 +53,8 @@ def _beverton_holt_helper_init_forcing(fgroup_data: xr.Dataset, state: SeapopymS
         "mask_temperature": standardize_forcing(fgroup_data[ForcingLabels.mask_temperature]),
         "timestep_number": standardize_forcing(fgroup_data[ConfigurationLabels.timesteps_number]),
         "delta_time": int(state[ConfigurationLabels.timestep].data),
-        "density_dependance_parameter": density_dependance_parameter,
+        "density_dependance_parameter_a": density_dependance_parameter_a,
+        "density_dependance_parameter_b": density_dependance_parameter_b,
         "initial_conditions_biomass": initial_condition_biomass,
         "initial_conditions_recruitment": initial_condition_recruitment,
     }
@@ -105,7 +107,8 @@ def _beverton_holt_survival_helper_init_forcing(fgroup_data: xr.Dataset, state: 
         )
 
     # Extract density dependence parameter (scalar per functional group)
-    density_dependance_parameter = float(fgroup_data[ConfigurationLabels.density_dependance_parameter].data)
+    density_dependance_parameter_a = float(fgroup_data[ConfigurationLabels.density_dependance_parameter_a].data)
+    density_dependance_parameter_b = float(fgroup_data[ConfigurationLabels.density_dependance_parameter_b].data)
 
     return {  # NOTE: the keys correspond to the parameters of the numba function
         "mortality": standardize_forcing(fgroup_data[ForcingLabels.mortality_field]),
@@ -114,7 +117,8 @@ def _beverton_holt_survival_helper_init_forcing(fgroup_data: xr.Dataset, state: 
         "mask_temperature": standardize_forcing(fgroup_data[ForcingLabels.mask_temperature]),
         "timestep_number": standardize_forcing(fgroup_data[ConfigurationLabels.timesteps_number]),
         "delta_time": int(state[ConfigurationLabels.timestep].data),
-        "density_dependance_parameter": density_dependance_parameter,
+        "density_dependance_parameter_a": density_dependance_parameter_a,
+        "density_dependance_parameter_b": density_dependance_parameter_b,
         "initial_conditions_biomass": initial_condition_biomass,
         "initial_conditions_recruitment": initial_condition_recruitment,
     }
