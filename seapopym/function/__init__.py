@@ -15,3 +15,5 @@ from .mortality_acidity_field import MortalityTemperatureAcidityKernel, Mortalit
 from .survival_rate import SurvivalRateBednarsekKernel
 from .apply_survival_rate_to_recruitment import ApplySurvivalRateToRecruitmentKernel
 from .temperature_gillooly import TemperatureGilloolyKernel
+from .apply_food_efficiency_to_primary_production import ApplyFoodEfficiencyToPrimaryProductionKernel
+from .phytoplankton_functional_type import FoodEfficiencyKernel

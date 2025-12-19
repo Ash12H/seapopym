@@ -132,3 +132,10 @@ temperature_gillooly_desc = {
     "description": "Sea water temperature with Gillooly et al. (2002) relation.",
     "units": StandardUnitsRegistry.format_unit_string(StandardUnitsLabels.temperature),
 }
+
+food_efficiency_desc = {
+    "long_name": "food efficiency by functional group",
+    "standard_name": "food_efficiency",
+    "description": "Food efficiency based on weighted phytoplankton functional types (pico, nano, micro) using Michaelis-Menten saturation.",
+    "units": "dimensionless",
+}

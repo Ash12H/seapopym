@@ -139,3 +139,38 @@ class AcidityBedBHSurvivalModel(NoTransportModel):
         chunk = configuration.forcing.chunk.as_dict()
         parallel = configuration.forcing.parallel
         return cls(state=state, kernel=AcidityBedBHSurvivalKernel(chunk=chunk, parallel=parallel))
+
+
+AcidityBedBHPFTSurvivalKernel = kernel_factory(
+    class_name="AcidityBedBHPFTSurvivalKernel",
+    kernel_unit=[
+        function.TemperatureGilloolyKernel,
+        function.GlobalMaskKernel,
+        function.MaskByFunctionalGroupKernel,
+        function.DayLengthKernel,
+        function.AverageTemperatureKernel,
+        function.AverageAcidityKernel,
+        function.PrimaryProductionByFgroupKernel,
+        function.FoodEfficiencyKernel,
+        function.ApplyFoodEfficiencyToPrimaryProductionKernel,
+        function.MinTemperatureByCohortKernel,
+        function.MaskTemperatureKernel,
+        function.SurvivalRateBednarsekKernel,
+        function.MortalityTemperatureAcidityBedKernel,
+        function.BiomassBeverttonHoltSurvivalKernel,
+    ],
+)
+
+
+class AcidityBedBHPFTSurvivalModel(NoTransportModel):
+    """A pteropod 1D model using Bednarsek mortality, survival rate, PFT and Beverton-Holt recruitment."""
+
+    @classmethod
+    def from_configuration(
+        cls: type[AcidityBedBHPFTSurvivalModel], configuration: AcidityBedBHConfiguration
+    ) -> AcidityBedBHPFTSurvivalModel:
+        """Create a model from a configuration."""
+        state = configuration.state
+        chunk = configuration.forcing.chunk.as_dict()
+        parallel = configuration.forcing.parallel
+        return cls(state=state, kernel=AcidityBedBHPFTSurvivalKernel(chunk=chunk, parallel=parallel))

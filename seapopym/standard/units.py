@@ -24,6 +24,7 @@ class StandardUnitsLabels(StrEnum):
     biomass = "gram / meter**2"
     production = "gram / meter**2 / day"
     acidity = "dimensionless"
+    concentration = "gram / meter**3"
 
     def __init__(self: StandardUnitsLabels, unit_as_str: str) -> None:
         """Prevent the instantiation of this class."""

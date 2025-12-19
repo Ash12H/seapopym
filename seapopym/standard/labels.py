@@ -66,8 +66,6 @@ class ConfigurationLabels(StrEnum):
     gamma_tr = "gamma_tr"
     day_layer = "day_layer"
     night_layer = "night_layer"
-    density_dependance_parameter_a = "density_dependance_parameter_a"
-    density_dependance_parameter_b = "density_dependance_parameter_b"
     # Cohorts
     cohort = "cohort"  # New axis
     timesteps_number = "timesteps_number"
@@ -89,6 +87,14 @@ class ConfigurationLabels(StrEnum):
     survival_rate_0 = "survival_rate_0"
     gamma_survival_rate_acidity = "gamma_survival_rate_acidity"
     gamma_survival_rate_temperature = "gamma_survival_rate_temperature"
+    # Beverton-Holt
+    density_dependance_parameter_a = "density_dependance_parameter_a"
+    density_dependance_parameter_b = "density_dependance_parameter_b"
+    # PFT
+    w_pico = "w_pico"
+    w_nano = "w_nano"
+    w_micro = "w_micro"
+    ks = "ks"
 
 
 class ForcingLabels(StrEnum):
@@ -111,3 +117,7 @@ class ForcingLabels(StrEnum):
     temperature = "temperature"
     primary_production = "primary_production"
     acidity = "acidity"
+    food_efficiency = "food_efficiency"
+    chlorophyll_micro = "chlorophyll_micro"
+    chlorophyll_nano = "chlorophyll_nano"
+    chlorophyll_pico = "chlorophyll_pico"
