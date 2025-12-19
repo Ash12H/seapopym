@@ -22,7 +22,12 @@ class FunctionalTypeParameter(acidity_bed_bh.FunctionalTypeParameter):
     """
 
     w_pico: pint.Quantity = field(
-        validator=partial(verify_parameter_init, "dimensionless"),
+        converter=partial(
+            verify_parameter_init,
+            unit="dimensionless",
+            parameter_name=ConfigurationLabels.w_pico,
+        ),
+        validator=validators.ge(0),
         metadata={
             "description": "Weight of picophytoplankton",
             "unit": "dimensionless",
@@ -30,7 +35,12 @@ class FunctionalTypeParameter(acidity_bed_bh.FunctionalTypeParameter):
         },
     )
     w_nano: pint.Quantity = field(
-        validator=partial(verify_parameter_init, "dimensionless"),
+        converter=partial(
+            verify_parameter_init,
+            unit="dimensionless",
+            parameter_name=ConfigurationLabels.w_nano,
+        ),
+        validator=validators.ge(0),
         metadata={
             "description": "Weight of nanophytoplankton",
             "unit": "dimensionless",
@@ -38,7 +48,12 @@ class FunctionalTypeParameter(acidity_bed_bh.FunctionalTypeParameter):
         },
     )
     w_micro: pint.Quantity = field(
-        validator=partial(verify_parameter_init, "dimensionless"),
+        converter=partial(
+            verify_parameter_init,
+            unit="dimensionless",
+            parameter_name=ConfigurationLabels.w_micro,
+        ),
+        validator=validators.ge(0),
         metadata={
             "description": "Weight of microphytoplankton",
             "unit": "dimensionless",
@@ -46,7 +61,12 @@ class FunctionalTypeParameter(acidity_bed_bh.FunctionalTypeParameter):
         },
     )
     ks: pint.Quantity = field(
-        validator=partial(verify_parameter_init, StandardUnitsLabels.concentration.units),
+        converter=partial(
+            verify_parameter_init,
+            unit=str((1 / StandardUnitsLabels.concentration.units).units),
+            parameter_name=ConfigurationLabels.ks,
+        ),
+        validator=validators.ge(0),
         metadata={
             "description": "Saturation constant for Bednarsek mortality",
             "unit": StandardUnitsLabels.concentration.units,
