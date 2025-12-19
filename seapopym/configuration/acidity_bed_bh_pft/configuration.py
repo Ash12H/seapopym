@@ -3,7 +3,7 @@
 from attrs import field, frozen
 
 from seapopym.configuration import acidity_bed_bh
-from seapopym.configuration.acidity_bed_bh_pft import FunctionalGroupParameter
+from seapopym.configuration.acidity_bed_bh_pft.functional_group_parameter import FunctionalGroupParameter
 
 
 @frozen(kw_only=True)
