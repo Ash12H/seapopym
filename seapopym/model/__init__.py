@@ -1,2 +1,2 @@
 from .no_transport_model import NoTransportModel, NoTransportSpaceOptimizedLightModel, NoTransportLightModel
-from .acidity_model import AcidityModel, AcidityBedModel, AcidityBedBHModel, AcidityBedBHSurvivalModel
+from .acidity_model import AcidityModel, AcidityBedModel, AcidityBedBHModel, AcidityBedBHSurvivalModel, AcidityBedBHPFTSurvivalModel
